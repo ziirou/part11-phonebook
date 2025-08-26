@@ -1,4 +1,4 @@
-name: Phonebook Backend - Deployment pipeline
+name: Phonebook - Deployment pipeline
 
 on:
   push:
