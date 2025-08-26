@@ -37,10 +37,10 @@ jobs:
         run: npm run build:ui
       - name: Check skip
         id: check_skip
-        if: ${{ github.ref == 'refs/heads/main' && github.event_name == 'push' && contains(join(github.event.commits.*.message, ' '), '#skip') }}
-        run: echo "skip=true" >> $GITHUB_OUTPUT
+        if: ${{ github.ref == 'refs/heads/main' && github.event_name == 'push' && !contains(join(github.event.commits.*.message, ' '), '#skip') }}
+        run: echo "skip=false" >> $GITHUB_OUTPUT
       - name: Trigger deployment
-        if: ${{ steps.check_skip.outputs.skip != 'true' }}
+        if: ${{ steps.check_skip.outputs.skip == 'false' }}
         run: curl -f https://api.render.com/deploy/${{ secrets.RENDER_SERVICE_ID }}?key=${{ secrets.RENDER_API_KEY }}
       - name: Set notification title and label
         id: notif_title
@@ -58,7 +58,7 @@ jobs:
           fi
       - name: Discord Notify Deployed
         uses: rjstone/discord-webhook-notify@v2
-        if: ${{ success() && steps.check_skip.outputs.skip != 'true' }}
+        if: ${{ success() && steps.check_skip.outputs.skip == 'false' }}
         with:
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
           severity: info
@@ -69,7 +69,7 @@ jobs:
             ${{ steps.notif_title.outputs.label }}: ${{ steps.notif_title.outputs.title }}
       - name: Discord Notify Deployment Skipped
         uses: rjstone/discord-webhook-notify@v2
-        if: ${{ success() && steps.check_skip.outputs.skip == 'true' }}
+        if: ${{ success() && steps.check_skip.outputs.skip != 'false' }}
         with:
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
           severity: info
@@ -90,7 +90,7 @@ jobs:
             By : ${{ github.actor }}
             ${{ steps.notif_title.outputs.label }}: ${{ steps.notif_title.outputs.title }}
   tag_release:
-    if: ${{ needs.deployment_pipeline.outputs.skip != 'true' }}
+    if: ${{ needs.deployment_pipeline.outputs.skip == 'false' }}
     needs: [deployment_pipeline]
     runs-on: ubuntu-22.04
     permissions:
