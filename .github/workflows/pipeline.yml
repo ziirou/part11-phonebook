@@ -41,7 +41,7 @@ jobs:
         run: echo "skip=true" >> $GITHUB_OUTPUT
       - name: Trigger deployment
         if: ${{ steps.check_skip.outputs.skip != 'true' }}
-        run: curl https://api.render.com/deploy/srv-${{ secrets.PHONEBOOK_RENDER_SERVICE_ID }}?key=${{ secrets.PHONEBOOK_RENDER_API_KEY }}
+        run: curl https://api.render.com/deploy/srv-${{ secrets.RENDER_SERVICE_ID }}?key=${{ secrets.RENDER_API_KEY }}
       - name: Set notification title and label
         id: notif_title
         if: always()
