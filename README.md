@@ -1,4 +1,4 @@
-# Exercise 11.20
+# Exercises 11.20-11.21
 
 The link to the online application: https://part11-phonebook-uzvt.onrender.com
 
